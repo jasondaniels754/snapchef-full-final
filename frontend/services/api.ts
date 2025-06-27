@@ -22,13 +22,27 @@ export const generateRecipe = async (
       }),
     });
 
+    console.log('Response status:', response.status);
+    console.log('Response headers:', response.headers);
+
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Backend API Error:', errorData);
-      throw new Error(`Backend API request failed with status ${response.status}`);
+      const errorText = await response.text();
+      console.error('Backend API Error Response:', errorText);
+      throw new Error(`Backend API request failed with status ${response.status}: ${errorText}`);
     }
 
-    const data = await response.json();
+    const responseText = await response.text();
+    console.log('Raw response text:', responseText);
+
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('Failed to parse JSON response:', parseError);
+      console.error('Response text was:', responseText);
+      throw new Error('Backend returned invalid JSON');
+    }
+
     console.log('Backend API response:', data);
 
     // Parse the content from the backend response
