@@ -33,11 +33,38 @@ const DIFFICULTY_OPTIONS = [
   { label: 'Hard', value: 'Hard' },
 ];
 
+const DIET_OPTIONS = [
+  { label: 'None', value: 'None' },
+  { label: 'Vegetarian', value: 'Vegetarian' },
+  { label: 'Vegan', value: 'Vegan' },
+  { label: 'Keto', value: 'Keto' },
+  { label: 'Gluten-Free', value: 'Gluten-Free' },
+  { label: 'Low-Carb', value: 'Low-Carb' },
+];
+
+const COOK_TIME_OPTIONS = [
+  { label: '15 minutes', value: 15 },
+  { label: '30 minutes', value: 30 },
+  { label: '45 minutes', value: 45 },
+  { label: '60 minutes', value: 60 },
+];
+
+const SERVINGS_OPTIONS = [
+  { label: '1 person', value: 1 },
+  { label: '2 people', value: 2 },
+  { label: '4 people', value: 4 },
+  { label: '6 people', value: 6 },
+  { label: '8 people', value: 8 },
+];
+
 export default function GenerateScreen(): React.ReactElement {
   const [formData, setFormData] = useState<RecipeFormData>({
     cuisine: 'Any',
     difficulty: 'Medium',
     numIngredients: 5,
+    diet: 'None',
+    cookTime: 30,
+    servings: 4,
   });
   const [loading, setLoading] = useState(false);
   const [recipe, setRecipe] = useState<Recipe | null>(null);
@@ -49,7 +76,10 @@ export default function GenerateScreen(): React.ReactElement {
       const generatedRecipe = await generateRecipe(
         formData.difficulty,
         formData.cuisine,
-        formData.numIngredients
+        formData.numIngredients,
+        formData.diet,
+        formData.cookTime,
+        formData.servings
       );
       
       console.log('Generated recipe:', JSON.stringify(generatedRecipe, null, 2));
@@ -120,6 +150,42 @@ export default function GenerateScreen(): React.ReactElement {
                 {formData.numIngredients} {formData.numIngredients === 1 ? 'ingredient' : 'ingredients'}
               </Text>
             </View>
+          </FormField>
+
+          <FormField
+            label="Diet"
+            required
+          >
+            <Select
+              value={formData.diet}
+              options={DIET_OPTIONS}
+              onChange={(value) => setFormData(prev => ({ ...prev, diet: value }))}
+              placeholder="Select diet"
+            />
+          </FormField>
+
+          <FormField
+            label="Cook Time"
+            required
+          >
+            <Select
+              value={formData.cookTime.toString()}
+              options={COOK_TIME_OPTIONS.map(option => ({ ...option, value: option.value.toString() }))}
+              onChange={(value) => setFormData(prev => ({ ...prev, cookTime: parseInt(value) }))}
+              placeholder="Select cook time"
+            />
+          </FormField>
+
+          <FormField
+            label="Servings"
+            required
+          >
+            <Select
+              value={formData.servings.toString()}
+              options={SERVINGS_OPTIONS.map(option => ({ ...option, value: option.value.toString() }))}
+              onChange={(value) => setFormData(prev => ({ ...prev, servings: parseInt(value) }))}
+              placeholder="Select servings"
+            />
           </FormField>
 
           <Button

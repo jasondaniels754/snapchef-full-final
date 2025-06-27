@@ -24,6 +24,9 @@ export interface RecipeFormData {
   difficulty: 'Easy' | 'Medium' | 'Hard';
   cuisine: string;
   numIngredients: number;
+  diet: string;
+  cookTime: number;
+  servings: number;
 }
 
 export interface RecipeCardProps {

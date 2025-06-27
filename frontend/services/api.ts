@@ -5,9 +5,19 @@ const BACKEND_URL = 'https://snapchef-full-final.onrender.com';
 export const generateRecipe = async (
   difficulty: string,
   cuisine: string,
-  numIngredients: number
+  numIngredients: number,
+  diet: string = 'None',
+  cookTime: number = 30,
+  servings: number = 4
 ): Promise<Recipe> => {
-  console.log('Generating recipe via backend API:', { difficulty, cuisine, numIngredients });
+  console.log('Generating recipe via backend API:', { 
+    difficulty, 
+    cuisine, 
+    numIngredients, 
+    diet, 
+    cookTime, 
+    servings 
+  });
 
   try {
     const response = await fetch(`${BACKEND_URL}/generate-recipes`, {
@@ -17,8 +27,11 @@ export const generateRecipe = async (
       },
       body: JSON.stringify({
         difficulty,
-        genre: cuisine, // Backend expects 'genre' instead of 'cuisine'
+        cuisine, // Now using 'cuisine' instead of 'genre'
         numIngredients,
+        diet,
+        cookTime,
+        servings,
       }),
     });
 
@@ -45,71 +58,94 @@ export const generateRecipe = async (
 
     console.log('Backend API response:', data);
 
-    // Parse the content from the backend response
-    const content = data.content;
-    console.log('Recipe content from backend:', content);
+    // Check if the response is in the new JSON format or old text format
+    if (data.title && data.ingredients && data.instructions) {
+      // New JSON format - use the data directly
+      const recipe: Recipe = {
+        id: Date.now().toString(),
+        title: data.title,
+        description: data.description || `A delicious ${difficulty.toLowerCase()} ${cuisine} recipe`,
+        ingredients: Array.isArray(data.ingredients) ? data.ingredients : [],
+        instructions: Array.isArray(data.instructions) ? data.instructions : [],
+        difficulty: data.difficulty as 'Easy' | 'Medium' | 'Hard' || difficulty as 'Easy' | 'Medium' | 'Hard',
+        cuisine: data.cuisine || cuisine,
+        prepTime: Number(data.prepTime) || 15,
+        cookTime: Number(data.cookTime) || cookTime,
+        servings: Number(data.servings) || servings,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
 
-    // Extract recipe information from the content
-    // The backend returns a text description, so we'll parse it
-    const lines = content.split('\n').filter(line => line.trim());
-    
-    // Find the title (usually the first line)
-    const title = lines[0] || 'Untitled Recipe';
-    
-    // Find ingredients (look for lines that might contain ingredients)
-    const ingredients: string[] = [];
-    const instructions: string[] = [];
-    let inIngredients = false;
-    let inInstructions = false;
-    
-    for (const line of lines) {
-      const trimmedLine = line.trim();
-      if (trimmedLine.toLowerCase().includes('ingredients') || trimmedLine.toLowerCase().includes('ingredient')) {
-        inIngredients = true;
-        inInstructions = false;
-        continue;
-      }
-      if (trimmedLine.toLowerCase().includes('instructions') || trimmedLine.toLowerCase().includes('steps') || trimmedLine.toLowerCase().includes('directions')) {
-        inIngredients = false;
-        inInstructions = true;
-        continue;
-      }
+      console.log('Final recipe object (JSON format):', JSON.stringify(recipe, null, 2));
+      return recipe;
+    } else if (data.content) {
+      // Old text format - parse the content as before
+      const content = data.content;
+      console.log('Recipe content from backend (text format):', content);
+
+      // Extract recipe information from the content
+      const lines = content.split('\n').filter(line => line.trim());
       
-      if (inIngredients && trimmedLine && !trimmedLine.toLowerCase().includes('ingredients')) {
-        // Clean up ingredient line
-        const cleanIngredient = trimmedLine.replace(/^[-•*]\s*/, '').trim();
-        if (cleanIngredient) {
-          ingredients.push(cleanIngredient);
+      // Find the title (usually the first line)
+      const title = lines[0] || 'Untitled Recipe';
+      
+      // Find ingredients (look for lines that might contain ingredients)
+      const ingredients: string[] = [];
+      const instructions: string[] = [];
+      let inIngredients = false;
+      let inInstructions = false;
+      
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+        if (trimmedLine.toLowerCase().includes('ingredients') || trimmedLine.toLowerCase().includes('ingredient')) {
+          inIngredients = true;
+          inInstructions = false;
+          continue;
+        }
+        if (trimmedLine.toLowerCase().includes('instructions') || trimmedLine.toLowerCase().includes('steps') || trimmedLine.toLowerCase().includes('directions')) {
+          inIngredients = false;
+          inInstructions = true;
+          continue;
+        }
+        
+        if (inIngredients && trimmedLine && !trimmedLine.toLowerCase().includes('ingredients')) {
+          // Clean up ingredient line
+          const cleanIngredient = trimmedLine.replace(/^[-•*]\s*/, '').trim();
+          if (cleanIngredient) {
+            ingredients.push(cleanIngredient);
+          }
+        }
+        
+        if (inInstructions && trimmedLine && !trimmedLine.toLowerCase().includes('instructions')) {
+          // Clean up instruction line
+          const cleanInstruction = trimmedLine.replace(/^\d+\.\s*/, '').trim();
+          if (cleanInstruction) {
+            instructions.push(cleanInstruction);
+          }
         }
       }
-      
-      if (inInstructions && trimmedLine && !trimmedLine.toLowerCase().includes('instructions')) {
-        // Clean up instruction line
-        const cleanInstruction = trimmedLine.replace(/^\d+\.\s*/, '').trim();
-        if (cleanInstruction) {
-          instructions.push(cleanInstruction);
-        }
-      }
+
+      // Create a valid Recipe object
+      const recipe: Recipe = {
+        id: Date.now().toString(),
+        title: title.replace(/^#+\s*/, '').trim(), // Remove markdown headers
+        description: `A delicious ${difficulty.toLowerCase()} ${cuisine} recipe with ${numIngredients} main ingredients.`,
+        ingredients: ingredients.length > 0 ? ingredients : [`${numIngredients} main ingredients`],
+        instructions: instructions.length > 0 ? instructions : ['Follow the recipe instructions carefully.'],
+        difficulty: difficulty as 'Easy' | 'Medium' | 'Hard',
+        cuisine: cuisine,
+        prepTime: difficulty === 'Easy' ? 15 : difficulty === 'Medium' ? 30 : 45,
+        cookTime: difficulty === 'Easy' ? 20 : difficulty === 'Medium' ? 35 : 60,
+        servings: servings,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      console.log('Final recipe object (text format):', JSON.stringify(recipe, null, 2));
+      return recipe;
+    } else {
+      throw new Error('Backend returned unexpected response format');
     }
-
-    // Create a valid Recipe object
-    const recipe: Recipe = {
-      id: Date.now().toString(),
-      title: title.replace(/^#+\s*/, '').trim(), // Remove markdown headers
-      description: `A delicious ${difficulty.toLowerCase()} ${cuisine} recipe with ${numIngredients} main ingredients.`,
-      ingredients: ingredients.length > 0 ? ingredients : [`${numIngredients} main ingredients`],
-      instructions: instructions.length > 0 ? instructions : ['Follow the recipe instructions carefully.'],
-      difficulty: difficulty as 'Easy' | 'Medium' | 'Hard',
-      cuisine: cuisine,
-      prepTime: difficulty === 'Easy' ? 15 : difficulty === 'Medium' ? 30 : 45,
-      cookTime: difficulty === 'Easy' ? 20 : difficulty === 'Medium' ? 35 : 60,
-      servings: 4,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    console.log('Final recipe object:', JSON.stringify(recipe, null, 2));
-    return recipe;
   } catch (error) {
     console.error('Error generating recipe via backend:', error);
     throw error;
