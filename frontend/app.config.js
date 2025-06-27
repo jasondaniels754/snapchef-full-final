@@ -36,7 +36,6 @@ export default {
     favicon: './assets/favicon.png'
   },
   extra: {
-    openaiApiKey: process.env.OPENAI_API_KEY,
     eas: {
       projectId: "your-project-id"
     }
