@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { colors } from '../design/designSystem';
 
 import GenerateScreen from '../screens/GenerateScreen';
 import SavedScreen from '../screens/SavedScreen';
@@ -32,8 +33,8 @@ export default function TabNavigator(): React.ReactElement {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#FF6B6B',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: colors.primary.main,
+        tabBarInactiveTintColor: colors.text.tertiary,
       })}
     >
       <Tab.Screen 
