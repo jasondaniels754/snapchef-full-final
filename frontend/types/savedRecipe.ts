@@ -25,6 +25,8 @@ export interface SavedRecipeListProps {
   onRecipePress: (recipe: SavedRecipe) => void;
   onFavoriteToggle: (recipe: SavedRecipe) => void;
   onDelete: (recipe: SavedRecipe) => void;
+  refreshing?: boolean;
+  onRefresh?: () => void;
 }
 
 export interface SavedRecipeFiltersProps {

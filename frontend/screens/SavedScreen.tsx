@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Alert, ActivityIndicator, Text, TextInput, TouchableOpacity, Modal, ScrollView } from 'react-native';
+import { View, StyleSheet, Alert, ActivityIndicator, Text, TextInput, TouchableOpacity, Modal, ScrollView, RefreshControl } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '../components/Header';
@@ -25,6 +25,7 @@ export default function SavedScreen(): React.ReactElement {
     sortOrder: 'desc',
   });
   const [selectedRecipe, setSelectedRecipe] = useState<SavedRecipe | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const loadSavedRecipes = useCallback(async () => {
     try {
@@ -50,6 +51,12 @@ export default function SavedScreen(): React.ReactElement {
       }));
     }
   }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await loadSavedRecipes();
+    setRefreshing(false);
+  }, [loadSavedRecipes]);
 
   useEffect(() => {
     loadSavedRecipes();
@@ -206,6 +213,8 @@ export default function SavedScreen(): React.ReactElement {
             onRecipePress={handleRecipePress}
             onFavoriteToggle={handleFavoriteToggle}
             onDelete={handleDelete}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
           />
         )}
       </View>

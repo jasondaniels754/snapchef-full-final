@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { colors, spacing } from '../design/designSystem';
 
 interface HeaderProps {
   title: string;
@@ -17,12 +18,12 @@ const styles = StyleSheet.create({
   header: {
     height: 90,
     paddingTop: 40,
-    backgroundColor: '#FF6B6B',
+    backgroundColor: colors.primary.main,
     alignItems: 'center',
     justifyContent: 'center',
   },
   title: {
-    color: 'white',
+    color: colors.text.inverse,
     fontSize: 20,
     fontWeight: 'bold',
   },
