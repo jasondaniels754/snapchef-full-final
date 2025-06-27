@@ -29,7 +29,7 @@ SnapChef is a mobile application that helps users plan and prepare meals using A
 
 ### Prerequisites
 - Node.js (v16 or higher)
-- npm or yarn
+- Yarn package manager (`npm install -g yarn`)
 - Expo CLI (`npm install -g @expo/cli`)
 - iOS Simulator (for Mac) or Android Emulator
 
@@ -44,13 +44,13 @@ SnapChef is a mobile application that helps users plan and prepare meals using A
 2. **Install frontend dependencies**
    ```bash
    cd frontend
-   npm install
+   yarn install
    ```
 
 3. **Install backend dependencies**
    ```bash
    cd ../backend
-   npm install
+   yarn install
    ```
 
 4. **Set up environment variables**
@@ -64,13 +64,13 @@ SnapChef is a mobile application that helps users plan and prepare meals using A
 5. **Start the backend server**
    ```bash
    cd backend
-   npm start
+   yarn start
    ```
 
 6. **Start the frontend app**
    ```bash
    cd frontend
-   npm start
+   yarn start
    ```
 
 7. **Run on your preferred platform**
@@ -106,17 +106,17 @@ snapchef-full-final/
 **Frontend:**
 ```bash
 cd frontend
-npm start          # Start Expo development server
-npm run ios        # Run on iOS Simulator
-npm run android    # Run on Android Emulator
-npm run web        # Run in web browser
+yarn start          # Start Expo development server
+yarn ios            # Run on iOS Simulator
+yarn android        # Run on Android Emulator
+yarn web            # Run in web browser
 ```
 
 **Backend:**
 ```bash
 cd backend
-npm start          # Start production server
-npm run dev        # Start development server with nodemon
+yarn start          # Start production server
+yarn dev            # Start development server with nodemon
 ```
 
 ### Environment Variables
@@ -127,13 +127,12 @@ OPENAI_API_KEY=your_openai_api_key_here
 PORT=4008
 ```
 
-**Frontend (app.json):**
-```json
-{
-  "expo": {
-    "extra": {
-      "openaiApiKey": "your_openai_api_key_here"
-    }
+**Frontend (app.config.js):**
+```javascript
+export default {
+  // ... other config
+  extra: {
+    openaiApiKey: process.env.OPENAI_API_KEY,
   }
 }
 ```
@@ -142,7 +141,7 @@ PORT=4008
 
 ### Backend (Render)
 The backend is configured for deployment on Render with:
-- `render.yaml` configuration file
+- `render.yaml` configuration file using yarn
 - `Procfile` for process management
 - Environment variable support
 
