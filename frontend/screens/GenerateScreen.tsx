@@ -7,6 +7,7 @@ import {
   Alert,
   SafeAreaView,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, spacing } from '../design/designSystem';
 import { Text } from '../components/ui/Text';
 import { Button } from '../components/ui/Button';
@@ -14,6 +15,7 @@ import { Select } from '../components/ui/Select';
 import { FormField } from '../components/ui/FormField';
 import { generateRecipe } from '../services/api';
 import { Recipe, RecipeFormData } from '../types/recipe';
+import { SavedRecipe } from '../types/savedRecipe';
 import Slider from '@react-native-community/slider';
 
 const CUISINE_OPTIONS = [
@@ -68,9 +70,11 @@ export default function GenerateScreen(): React.ReactElement {
   });
   const [loading, setLoading] = useState(false);
   const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const [isSaved, setIsSaved] = useState(false);
 
   const handleGenerate = async () => {
     setLoading(true);
+    setIsSaved(false); // Reset saved status when generating new recipe
     try {
       console.log('Generating recipe with:', formData);
       const generatedRecipe = await generateRecipe(
@@ -89,6 +93,40 @@ export default function GenerateScreen(): React.ReactElement {
       Alert.alert('Error', 'Failed to generate recipe. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSaveRecipe = async () => {
+    if (!recipe) return;
+
+    try {
+      // Load existing saved recipes
+      const savedRecipesJson = await AsyncStorage.getItem('savedRecipes');
+      const existingRecipes: SavedRecipe[] = savedRecipesJson ? JSON.parse(savedRecipesJson) : [];
+
+      // Check if recipe is already saved
+      const isAlreadySaved = existingRecipes.some(r => r.id === recipe.id);
+      if (isAlreadySaved) {
+        Alert.alert('Already Saved', 'This recipe is already in your saved recipes.');
+        return;
+      }
+
+      // Create saved recipe object
+      const savedRecipe: SavedRecipe = {
+        ...recipe,
+        savedAt: new Date().toISOString(),
+        isFavorite: false,
+      };
+
+      // Add to saved recipes
+      const updatedRecipes = [...existingRecipes, savedRecipe];
+      await AsyncStorage.setItem('savedRecipes', JSON.stringify(updatedRecipes));
+
+      setIsSaved(true);
+      Alert.alert('Success', 'Recipe saved to your collection!');
+    } catch (error) {
+      console.error('Error saving recipe:', error);
+      Alert.alert('Error', 'Failed to save recipe. Please try again.');
     }
   };
 
@@ -247,6 +285,15 @@ export default function GenerateScreen(): React.ReactElement {
                 </Text>
               ))}
             </View>
+
+            <View style={styles.saveButtonContainer}>
+              <Button
+                title={isSaved ? 'Recipe Saved!' : 'Save Recipe'}
+                onPress={handleSaveRecipe}
+                disabled={isSaved}
+                style={isSaved ? styles.savedButton : styles.saveButton}
+              />
+            </View>
           </View>
         )}
       </ScrollView>
@@ -356,5 +403,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: spacing.xs,
     color: colors.text.primary,
+  },
+  saveButtonContainer: {
+    marginTop: spacing.md,
+    alignItems: 'center',
+  },
+  saveButton: {
+    backgroundColor: colors.primary.main,
+    padding: spacing.md,
+    borderRadius: 8,
+  },
+  savedButton: {
+    backgroundColor: colors.neutral.background,
   },
 }); 

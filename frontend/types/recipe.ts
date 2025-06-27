@@ -12,6 +12,7 @@ export interface Recipe {
   instructions: string[];
   difficulty: 'Easy' | 'Medium' | 'Hard';
   cuisine: string;
+  diet?: string;
   prepTime: number;
   cookTime: number;
   servings: number;

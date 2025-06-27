@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Alert, ActivityIndicator, Text } from 'react-native';
+import { View, StyleSheet, Alert, ActivityIndicator, Text, TextInput, TouchableOpacity, Modal, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 import Header from '../components/Header';
 import SavedRecipeList from '../components/SavedRecipeList';
 import SavedRecipeFilters from '../components/SavedRecipeFilters';
@@ -12,14 +13,17 @@ export default function SavedScreen(): React.ReactElement {
     recipes: [],
     isLoading: true,
     error: null,
+    searchQuery: '',
     filters: {
       favoritesOnly: false,
       cuisine: null,
       difficulty: null,
+      diet: null,
     },
     sortBy: 'savedAt',
     sortOrder: 'desc',
   });
+  const [selectedRecipe, setSelectedRecipe] = useState<SavedRecipe | null>(null);
 
   const loadSavedRecipes = useCallback(async () => {
     try {
@@ -51,8 +55,7 @@ export default function SavedScreen(): React.ReactElement {
   }, [loadSavedRecipes]);
 
   const handleRecipePress = useCallback((recipe: SavedRecipe) => {
-    // TODO: Navigate to recipe detail screen
-    console.log('Recipe pressed:', recipe.title);
+    setSelectedRecipe(recipe);
   }, []);
 
   const handleFavoriteToggle = useCallback(async (recipe: SavedRecipe) => {
@@ -103,8 +106,22 @@ export default function SavedScreen(): React.ReactElement {
     setState(prev => ({ ...prev, sortBy, sortOrder }));
   }, []);
 
+  const handleSearchChange = useCallback((searchQuery: string) => {
+    setState(prev => ({ ...prev, searchQuery }));
+  }, []);
+
   const filteredAndSortedRecipes = React.useMemo(() => {
     let result = [...state.recipes];
+
+    // Apply search filter
+    if (state.searchQuery.trim()) {
+      const query = state.searchQuery.toLowerCase();
+      result = result.filter(recipe =>
+        recipe.title.toLowerCase().includes(query) ||
+        recipe.description.toLowerCase().includes(query) ||
+        recipe.ingredients.some(ingredient => ingredient.toLowerCase().includes(query))
+      );
+    }
 
     // Apply filters
     if (state.filters.favoritesOnly) {
@@ -115,6 +132,9 @@ export default function SavedScreen(): React.ReactElement {
     }
     if (state.filters.difficulty) {
       result = result.filter(recipe => recipe.difficulty === state.filters.difficulty);
+    }
+    if (state.filters.diet) {
+      result = result.filter(recipe => recipe.diet === state.filters.diet);
     }
 
     // Apply sorting
@@ -133,11 +153,33 @@ export default function SavedScreen(): React.ReactElement {
     });
 
     return result;
-  }, [state.recipes, state.filters, state.sortBy, state.sortOrder]);
+  }, [state.recipes, state.searchQuery, state.filters, state.sortBy, state.sortOrder]);
 
   return (
     <View style={styles.container}>
       <Header title="Saved Recipes" />
+      
+      <View style={styles.searchContainer}>
+        <View style={styles.searchInputContainer}>
+          <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search recipes..."
+            value={state.searchQuery}
+            onChangeText={handleSearchChange}
+            placeholderTextColor="#999"
+          />
+          {state.searchQuery.length > 0 && (
+            <TouchableOpacity
+              onPress={() => handleSearchChange('')}
+              style={styles.clearButton}
+            >
+              <Ionicons name="close-circle" size={20} color="#666" />
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+
       <SavedRecipeFilters
         filters={state.filters}
         onFilterChange={handleFilterChange}
@@ -166,6 +208,78 @@ export default function SavedScreen(): React.ReactElement {
           />
         )}
       </View>
+
+      <Modal
+        visible={selectedRecipe !== null}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setSelectedRecipe(null)}
+      >
+        {selectedRecipe && (
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <TouchableOpacity
+                onPress={() => setSelectedRecipe(null)}
+                style={styles.closeButton}
+              >
+                <Ionicons name="close" size={24} color="#666" />
+              </TouchableOpacity>
+              <Text style={styles.modalTitle}>{selectedRecipe.title}</Text>
+            </View>
+            
+            <ScrollView style={styles.modalContent}>
+              <Text style={styles.modalDescription}>{selectedRecipe.description}</Text>
+              
+              <View style={styles.modalDetails}>
+                <View style={styles.detailItem}>
+                  <Text style={styles.detailLabel}>Difficulty</Text>
+                  <Text style={styles.detailValue}>{selectedRecipe.difficulty}</Text>
+                </View>
+                <View style={styles.detailItem}>
+                  <Text style={styles.detailLabel}>Cuisine</Text>
+                  <Text style={styles.detailValue}>{selectedRecipe.cuisine}</Text>
+                </View>
+                {selectedRecipe.diet && (
+                  <View style={styles.detailItem}>
+                    <Text style={styles.detailLabel}>Diet</Text>
+                    <Text style={styles.detailValue}>{selectedRecipe.diet}</Text>
+                  </View>
+                )}
+                <View style={styles.detailItem}>
+                  <Text style={styles.detailLabel}>Prep Time</Text>
+                  <Text style={styles.detailValue}>{selectedRecipe.prepTime} mins</Text>
+                </View>
+                <View style={styles.detailItem}>
+                  <Text style={styles.detailLabel}>Cook Time</Text>
+                  <Text style={styles.detailValue}>{selectedRecipe.cookTime} mins</Text>
+                </View>
+                <View style={styles.detailItem}>
+                  <Text style={styles.detailLabel}>Servings</Text>
+                  <Text style={styles.detailValue}>{selectedRecipe.servings}</Text>
+                </View>
+              </View>
+
+              <View style={styles.modalSection}>
+                <Text style={styles.sectionTitle}>Ingredients</Text>
+                {selectedRecipe.ingredients.map((ingredient, index) => (
+                  <Text key={index} style={styles.ingredient}>
+                    • {ingredient}
+                  </Text>
+                ))}
+              </View>
+
+              <View style={styles.modalSection}>
+                <Text style={styles.sectionTitle}>Instructions</Text>
+                {selectedRecipe.instructions.map((instruction, index) => (
+                  <Text key={index} style={styles.instruction}>
+                    {index + 1}. {instruction}
+                  </Text>
+                ))}
+              </View>
+            </ScrollView>
+          </View>
+        )}
+      </Modal>
     </View>
   );
 }
@@ -204,5 +318,79 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
+  },
+  searchContainer: {
+    padding: 16,
+  },
+  searchInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 8,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+  },
+  clearButton: {
+    padding: 8,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+  },
+  closeButton: {
+    padding: 8,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 16,
+  },
+  modalContent: {
+    flex: 1,
+    padding: 16,
+  },
+  modalDescription: {
+    fontSize: 16,
+    marginBottom: 16,
+  },
+  modalDetails: {
+    marginBottom: 16,
+  },
+  detailItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  detailLabel: {
+    fontWeight: 'bold',
+    marginRight: 8,
+  },
+  detailValue: {
+    flex: 1,
+  },
+  modalSection: {
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  ingredient: {
+    marginBottom: 4,
+  },
+  instruction: {
+    marginBottom: 4,
   },
 }); 

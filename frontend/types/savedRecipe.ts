@@ -9,10 +9,12 @@ export interface SavedRecipeState {
   recipes: SavedRecipe[];
   isLoading: boolean;
   error: string | null;
+  searchQuery: string;
   filters: {
     favoritesOnly: boolean;
     cuisine: string | null;
     difficulty: 'Easy' | 'Medium' | 'Hard' | null;
+    diet: string | null;
   };
   sortBy: 'savedAt' | 'title' | 'difficulty';
   sortOrder: 'asc' | 'desc';

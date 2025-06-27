@@ -3,6 +3,15 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SavedRecipeFiltersProps } from '../types/savedRecipe';
 
+const DIET_OPTIONS = [
+  'None',
+  'Vegetarian',
+  'Vegan',
+  'Keto',
+  'Gluten-Free',
+  'Low-Carb',
+];
+
 export default function SavedRecipeFilters({
   filters,
   onFilterChange,
@@ -17,9 +26,19 @@ export default function SavedRecipeFilters({
     }
   };
 
+  const handleDietFilter = () => {
+    if (!filters.diet) {
+      onFilterChange({ ...filters, diet: 'Vegetarian' });
+    } else {
+      const currentIndex = DIET_OPTIONS.indexOf(filters.diet);
+      const nextIndex = (currentIndex + 1) % DIET_OPTIONS.length;
+      onFilterChange({ ...filters, diet: DIET_OPTIONS[nextIndex] });
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.filterRow}>
+      <View style={styles.filterGrid}>
         <TouchableOpacity
           style={[styles.filterButton, filters.favoritesOnly ? styles.activeFilter : null]}
           onPress={() => onFilterChange({ ...filters, favoritesOnly: !filters.favoritesOnly })}
@@ -59,6 +78,20 @@ export default function SavedRecipeFilters({
           />
           <Text style={[styles.filterText, filters.difficulty ? styles.activeFilterText : null]}>
             {filters.difficulty || 'Difficulty'}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.filterButton, filters.diet ? styles.activeFilter : null]}
+          onPress={handleDietFilter}
+        >
+          <Ionicons
+            name="leaf-outline"
+            size={20}
+            color={filters.diet ? '#FF6B6B' : '#666'}
+          />
+          <Text style={[styles.filterText, filters.diet ? styles.activeFilterText : null]}>
+            {filters.diet || 'Diet'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -124,8 +157,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
   },
-  filterRow: {
+  filterGrid: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     marginBottom: 16,
   },
@@ -135,6 +169,9 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
     backgroundColor: '#F5F5F5',
+    width: '48%',
+    marginBottom: 8,
+    justifyContent: 'center',
   },
   activeFilter: {
     backgroundColor: '#FFE5E5',
