@@ -5,7 +5,7 @@ services:
     plan: free
     rootDir: backend
     buildCommand: yarn install
-    startCommand: yarn start
+    startCommand: node server.js
     envVars:
       - key: OPENAI_API_KEY
         sync: false 
