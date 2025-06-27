@@ -1,7 +1,8 @@
 import { Recipe } from '../types/recipe';
+import Constants from 'expo-constants';
 
 const API_URL = 'https://api.openai.com/v1/chat/completions';
-const API_KEY = process.env.OPENAI_API_KEY;
+const API_KEY = Constants.expoConfig?.extra?.openaiApiKey || process.env.OPENAI_API_KEY;
 
 export const generateRecipe = async (
   difficulty: string,
