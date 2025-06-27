@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SavedRecipeFiltersProps } from '../types/savedRecipe';
+import { colors, spacing } from '../design/designSystem';
 
 const DIET_OPTIONS = [
   'None',
@@ -46,7 +47,7 @@ export default function SavedRecipeFilters({
           <Ionicons
             name={filters.favoritesOnly ? 'heart' : 'heart-outline'}
             size={20}
-            color={filters.favoritesOnly ? '#FF6B6B' : '#666'}
+            color={filters.favoritesOnly ? colors.primary.main : colors.text.secondary}
           />
           <Text style={[styles.filterText, filters.favoritesOnly ? styles.activeFilterText : null]}>
             Favorites
@@ -60,7 +61,7 @@ export default function SavedRecipeFilters({
           <Ionicons
             name="restaurant-outline"
             size={20}
-            color={filters.cuisine ? '#FF6B6B' : '#666'}
+            color={filters.cuisine ? colors.primary.main : colors.text.secondary}
           />
           <Text style={[styles.filterText, filters.cuisine ? styles.activeFilterText : null]}>
             {filters.cuisine || 'Cuisine'}
@@ -74,7 +75,7 @@ export default function SavedRecipeFilters({
           <Ionicons
             name="flame-outline"
             size={20}
-            color={filters.difficulty ? '#FF6B6B' : '#666'}
+            color={filters.difficulty ? colors.primary.main : colors.text.secondary}
           />
           <Text style={[styles.filterText, filters.difficulty ? styles.activeFilterText : null]}>
             {filters.difficulty || 'Difficulty'}
@@ -88,7 +89,7 @@ export default function SavedRecipeFilters({
           <Ionicons
             name="leaf-outline"
             size={20}
-            color={filters.diet ? '#FF6B6B' : '#666'}
+            color={filters.diet ? colors.primary.main : colors.text.secondary}
           />
           <Text style={[styles.filterText, filters.diet ? styles.activeFilterText : null]}>
             {filters.diet || 'Diet'}
@@ -109,7 +110,7 @@ export default function SavedRecipeFilters({
             <Ionicons
               name={currentSort.order === 'asc' ? 'arrow-up' : 'arrow-down'}
               size={16}
-              color="#FF6B6B"
+              color={colors.primary.main}
             />
           )}
         </TouchableOpacity>
@@ -125,7 +126,7 @@ export default function SavedRecipeFilters({
             <Ionicons
               name={currentSort.order === 'asc' ? 'arrow-up' : 'arrow-down'}
               size={16}
-              color="#FF6B6B"
+              color={colors.primary.main}
             />
           )}
         </TouchableOpacity>
@@ -141,7 +142,7 @@ export default function SavedRecipeFilters({
             <Ionicons
               name={currentSort.order === 'asc' ? 'arrow-up' : 'arrow-down'}
               size={16}
-              color="#FF6B6B"
+              color={colors.primary.main}
             />
           )}
         </TouchableOpacity>
@@ -152,37 +153,37 @@ export default function SavedRecipeFilters({
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: '#fff',
+    padding: spacing.md,
+    backgroundColor: colors.neutral.white,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: colors.neutral.border,
   },
   filterGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   filterButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 8,
+    padding: spacing.sm,
     borderRadius: 8,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: colors.neutral.background,
     width: '48%',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
     justifyContent: 'center',
   },
   activeFilter: {
-    backgroundColor: '#FFE5E5',
+    backgroundColor: colors.primary.light + '20', // 20% opacity
   },
   filterText: {
-    marginLeft: 4,
+    marginLeft: spacing.xs,
     fontSize: 14,
-    color: '#666',
+    color: colors.text.secondary,
   },
   activeFilterText: {
-    color: '#FF6B6B',
+    color: colors.primary.main,
   },
   sortRow: {
     flexDirection: 'row',
@@ -190,26 +191,26 @@ const styles = StyleSheet.create({
   },
   sortLabel: {
     fontSize: 14,
-    color: '#666',
-    marginRight: 8,
+    color: colors.text.secondary,
+    marginRight: spacing.sm,
   },
   sortButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 8,
-    marginRight: 8,
+    padding: spacing.sm,
+    marginRight: spacing.sm,
     borderRadius: 8,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: colors.neutral.background,
   },
   activeSort: {
-    backgroundColor: '#FFE5E5',
+    backgroundColor: colors.primary.light + '20', // 20% opacity
   },
   sortText: {
     fontSize: 14,
-    color: '#666',
-    marginRight: 4,
+    color: colors.text.secondary,
+    marginRight: spacing.xs,
   },
   activeSortText: {
-    color: '#FF6B6B',
+    color: colors.primary.main,
   },
 }); 

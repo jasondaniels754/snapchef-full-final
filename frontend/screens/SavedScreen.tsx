@@ -7,6 +7,7 @@ import SavedRecipeList from '../components/SavedRecipeList';
 import SavedRecipeFilters from '../components/SavedRecipeFilters';
 import { SavedRecipe, SavedRecipeState } from '../types/savedRecipe';
 import { Recipe } from '../types/recipe';
+import { colors, spacing } from '../design/designSystem';
 
 export default function SavedScreen(): React.ReactElement {
   const [state, setState] = useState<SavedRecipeState>({
@@ -189,7 +190,7 @@ export default function SavedScreen(): React.ReactElement {
       <View style={styles.content}>
         {state.isLoading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#FF6B6B" />
+            <ActivityIndicator size="large" color={colors.primary.main} />
           </View>
         ) : state.error ? (
           <View style={styles.errorContainer}>
@@ -287,7 +288,7 @@ export default function SavedScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.neutral.white,
   },
   content: {
     flex: 1,
@@ -301,96 +302,108 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    padding: spacing.md,
   },
   errorText: {
     fontSize: 16,
-    color: '#FF6B6B',
+    color: colors.semantic.error,
     textAlign: 'center',
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    padding: spacing.md,
   },
   emptyText: {
     fontSize: 16,
-    color: '#666',
+    color: colors.text.secondary,
     textAlign: 'center',
   },
   searchContainer: {
-    padding: 16,
+    padding: spacing.md,
   },
   searchInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.neutral.border,
     borderRadius: 8,
-    padding: 8,
+    padding: spacing.sm,
+    backgroundColor: colors.neutral.white,
   },
   searchIcon: {
-    marginRight: 8,
+    marginRight: spacing.sm,
   },
   searchInput: {
     flex: 1,
+    fontSize: 16,
+    color: colors.text.primary,
   },
   clearButton: {
-    padding: 8,
+    padding: spacing.sm,
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.neutral.white,
   },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.neutral.border,
   },
   closeButton: {
-    padding: 8,
+    padding: spacing.sm,
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginLeft: 16,
+    marginLeft: spacing.md,
+    color: colors.text.primary,
   },
   modalContent: {
     flex: 1,
-    padding: 16,
+    padding: spacing.md,
   },
   modalDescription: {
     fontSize: 16,
-    marginBottom: 16,
+    marginBottom: spacing.md,
+    color: colors.text.secondary,
   },
   modalDetails: {
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   detailItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   detailLabel: {
     fontWeight: 'bold',
-    marginRight: 8,
+    marginRight: spacing.sm,
+    color: colors.text.primary,
   },
   detailValue: {
     flex: 1,
+    color: colors.text.secondary,
   },
   modalSection: {
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
+    color: colors.text.primary,
   },
   ingredient: {
-    marginBottom: 4,
+    marginBottom: spacing.xs,
+    color: colors.text.secondary,
   },
   instruction: {
-    marginBottom: 4,
+    marginBottom: spacing.xs,
+    color: colors.text.secondary,
   },
 }); 
