@@ -3,6 +3,7 @@ services:
     name: snapchef-backend
     env: node
     plan: free
+    rootDir: backend
     buildCommand: yarn install
     startCommand: yarn start
     envVars:
