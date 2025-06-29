@@ -153,28 +153,46 @@ export const generateRecipe = async (
 };
 
 export const sendChatMessage = async (message: string, context: string = 'cooking_assistant'): Promise<string> => {
+  console.log('Sending chat message to:', `${BACKEND_URL}/api/chat`);
+  console.log('Message:', message);
+  console.log('Context:', context);
+  
   try {
+    const requestBody = {
+      message,
+      context,
+    };
+    console.log('Request body:', JSON.stringify(requestBody, null, 2));
+    
     const response = await fetch(`${BACKEND_URL}/api/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        message,
-        context,
-      }),
+      body: JSON.stringify(requestBody),
     });
+
+    console.log('Response status:', response.status);
+    console.log('Response headers:', response.headers);
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Chat API Error Response:', errorText);
+      console.error('Full error details:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+        body: errorText
+      });
       throw new Error(`Chat API request failed with status ${response.status}: ${errorText}`);
     }
 
     const data = await response.json();
+    console.log('Chat API success response:', data);
     return data.response || 'I apologize, but I couldn\'t process your request. Please try again.';
   } catch (error) {
     console.error('Error sending chat message:', error);
+    console.error('Full error object:', error);
     throw error;
   }
 }; 
