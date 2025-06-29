@@ -1,6 +1,6 @@
 import { Recipe } from '../types/recipe';
 
-const BACKEND_URL = 'https://snapchef-backend.onrender.com';
+const BACKEND_URL = 'https://snapchef-full-final.onrender.com';
 
 export const generateRecipe = async (
   difficulty: string,
