@@ -123,6 +123,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.neutral.card,
     borderRadius: 12,
     padding: spacing.md,
+    paddingTop: spacing.lg,
     marginBottom: spacing.md,
     shadowColor: '#000',
     shadowOffset: {
