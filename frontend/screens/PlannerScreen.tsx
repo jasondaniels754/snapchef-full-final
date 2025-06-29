@@ -191,6 +191,7 @@ export default function PlannerScreen(): React.ReactElement {
 
   return (
     <View style={styles.container}>
+      <Header title="Meal Planner" />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -198,7 +199,6 @@ export default function PlannerScreen(): React.ReactElement {
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
       >
-        <Header title="Meal Planner" />
         <Calendar
           selectedDate={state.selectedDate}
           onDateSelect={handleDateSelect}
