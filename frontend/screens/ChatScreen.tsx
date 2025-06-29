@@ -88,9 +88,6 @@ export default function ChatScreen(): React.ReactElement {
   const handleSendMessage = async (text: string) => {
     if (!text.trim() || state.isLoading) return;
 
-    console.log('🚀 Sending message:', text);
-    console.log('📊 Current messages count:', state.messages.length);
-    
     setState(prev => ({ ...prev, isLoading: true }));
 
     try {
@@ -112,18 +109,11 @@ export default function ChatScreen(): React.ReactElement {
       // Add user message and loading AI message
       const messagesWithUser = [...state.messages, userMessage];
       const messagesWithLoading = [...messagesWithUser, aiMessage];
-      
-      console.log('📝 Adding user message and loading AI message');
-      console.log('📊 Messages count after adding user:', messagesWithUser.length);
-      console.log('📊 Messages count with loading AI:', messagesWithLoading.length);
-      
       setState(prev => ({ ...prev, messages: messagesWithLoading }));
       saveChatHistory(messagesWithLoading);
 
       // Get AI response
-      console.log('🤖 Getting AI response...');
       const aiResponse = await sendMessageToAI(text);
-      console.log('✅ AI response received:', aiResponse.substring(0, 50) + '...');
       
       const finalAiMessage: ChatMessage = {
         ...aiMessage,
@@ -133,18 +123,14 @@ export default function ChatScreen(): React.ReactElement {
 
       // Update with final AI message
       const finalMessages = [...messagesWithUser, finalAiMessage];
-      console.log('📊 Final messages count:', finalMessages.length);
-      
       setState(prev => ({ 
         ...prev, 
         messages: finalMessages,
         isLoading: false 
       }));
       saveChatHistory(finalMessages);
-      
-      console.log('✅ Message flow completed successfully');
     } catch (error) {
-      console.error('❌ Error sending message:', error);
+      console.error('Error sending message:', error);
       Alert.alert('Error', 'Failed to send message. Please try again.');
       setState(prev => ({ ...prev, isLoading: false }));
     }
@@ -185,8 +171,6 @@ export default function ChatScreen(): React.ReactElement {
 
   // Load chat history on mount
   useEffect(() => {
-    console.warn('🚀 ChatScreen mounted - testing console logs');
-    console.error('🚀 ChatScreen mounted - testing console logs');
     loadChatHistory();
   }, []);
 
@@ -201,22 +185,6 @@ export default function ChatScreen(): React.ReactElement {
       <Text style={styles.emptyStateText}>
         Ask me anything about cooking, recipes, meal planning, or kitchen tips. I'm here to help you become a better cook!
       </Text>
-      
-      {/* Test button for debugging */}
-      <TouchableOpacity 
-        style={styles.testButton}
-        onPress={async () => {
-          try {
-            const response = await sendChatMessage('test', 'cooking_assistant');
-            Alert.alert('✅ API Test Success', `Response: ${response.substring(0, 100)}...`);
-          } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            Alert.alert('❌ API Test Failed', `Error: ${errorMessage}`);
-          }
-        }}
-      >
-        <Text style={styles.testButtonText}>Test API Connection</Text>
-      </TouchableOpacity>
     </View>
   );
 
@@ -319,17 +287,5 @@ const styles = StyleSheet.create({
     color: colors.text.tertiary,
     textAlign: 'center',
     paddingHorizontal: spacing.lg,
-  },
-  testButton: {
-    padding: spacing.md,
-    backgroundColor: colors.neutral.background,
-    borderWidth: 1,
-    borderColor: colors.text.secondary,
-    borderRadius: spacing.sm,
-  },
-  testButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: colors.text.secondary,
   },
 }); 
