@@ -7,10 +7,16 @@ import { colors, spacing } from '../design/designSystem';
 export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps): React.ReactElement {
   const [message, setMessage] = useState('');
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (message.trim() && !isLoading) {
-      onSendMessage(message.trim());
-      setMessage('');
+      const messageToSend = message.trim();
+      setMessage(''); // Clear immediately
+      try {
+        await onSendMessage(messageToSend);
+      } catch (error) {
+        // If there's an error, restore the message
+        setMessage(messageToSend);
+      }
     }
   };
 

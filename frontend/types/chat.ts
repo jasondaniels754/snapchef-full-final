@@ -22,6 +22,6 @@ export interface MessageBubbleProps {
 }
 
 export interface ChatInputProps {
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: string) => Promise<void>;
   isLoading: boolean;
 } 
