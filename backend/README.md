@@ -13,3 +13,4 @@ This is the Express server for SnapChef. It exposes a `/generate-recipes` endpoi
 - `POST /generate-recipes`
   - Body: `{ difficulty, genre, numIngredients }`
   - Response: `{ content: string }`
+# Trigger deployment
