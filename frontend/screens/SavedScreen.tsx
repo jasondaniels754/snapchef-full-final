@@ -59,9 +59,11 @@ export default function SavedScreen(): React.ReactElement {
   }, []);
 
   const onRefresh = useCallback(async () => {
+    console.log('🔄 Refresh triggered');
     setRefreshing(true);
     await loadSavedRecipes();
     setRefreshing(false);
+    console.log('✅ Refresh completed');
   }, [loadSavedRecipes]);
 
   useEffect(() => {

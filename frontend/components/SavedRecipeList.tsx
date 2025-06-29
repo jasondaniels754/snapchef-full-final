@@ -12,6 +12,8 @@ export default function SavedRecipeList({
   refreshing = false,
   onRefresh,
 }: SavedRecipeListProps): React.ReactElement {
+  console.log('📱 SavedRecipeList render - refreshing:', refreshing, 'onRefresh:', !!onRefresh);
+  
   const renderItem = ({ item }: { item: SavedRecipe }) => (
     <SavedRecipeItem
       recipe={item}
