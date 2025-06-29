@@ -2,14 +2,17 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { MealPlanCardProps, MealType } from '../types/planner';
+import { colors, spacing } from '../design/designSystem';
 
 export default function MealPlanCard({
-  mealPlan,
-  onMealAdd,
-  onMealRemove,
+  date,
+  meals,
+  onAddMeal,
+  onRemoveMeal,
+  onMealPress,
 }: MealPlanCardProps): React.ReactElement {
   const renderMealSlot = (mealType: MealType) => {
-    const meal = mealPlan.meals[mealType];
+    const meal = meals[mealType];
     const mealTitle = mealType.charAt(0).toUpperCase() + mealType.slice(1);
 
     return (
@@ -19,39 +22,44 @@ export default function MealPlanCard({
           {meal ? (
             <TouchableOpacity
               style={styles.removeButton}
-              onPress={() => onMealRemove(mealType)}
+              onPress={() => onRemoveMeal(mealType)}
             >
-              <Ionicons name="close-circle" size={20} color="#FF6B6B" />
+              <Ionicons name="close-circle" size={20} color={colors.semantic.error} />
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
               style={styles.addButton}
-              onPress={() => onMealAdd(mealType)}
+              onPress={() => onAddMeal(mealType)}
             >
-              <Ionicons name="add-circle-outline" size={20} color="#666" />
+              <Ionicons name="add-circle-outline" size={20} color={colors.text.secondary} />
             </TouchableOpacity>
           )}
         </View>
         {meal ? (
-          <View style={styles.mealContent}>
+          <TouchableOpacity
+            style={styles.mealContent}
+            onPress={() => onMealPress(meal)}
+            activeOpacity={0.7}
+          >
             <Text style={styles.recipeTitle}>{meal.title}</Text>
             <View style={styles.mealDetails}>
               <View style={styles.detailItem}>
-                <Ionicons name="time-outline" size={16} color="#666" />
+                <Ionicons name="time-outline" size={16} color={colors.text.secondary} />
                 <Text style={styles.detailText}>
                   {meal.prepTime + meal.cookTime} mins
                 </Text>
               </View>
               <View style={styles.detailItem}>
-                <Ionicons name="flame-outline" size={16} color="#666" />
+                <Ionicons name="flame-outline" size={16} color={colors.text.secondary} />
                 <Text style={styles.detailText}>{meal.difficulty}</Text>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
         ) : (
           <TouchableOpacity
             style={styles.emptyMeal}
-            onPress={() => onMealAdd(mealType)}
+            onPress={() => onAddMeal(mealType)}
+            activeOpacity={0.7}
           >
             <Text style={styles.emptyMealText}>Add {mealTitle}</Text>
           </TouchableOpacity>
@@ -63,7 +71,7 @@ export default function MealPlanCard({
   return (
     <View style={styles.container}>
       <Text style={styles.date}>
-        {new Date(mealPlan.date).toLocaleDateString('en-US', {
+        {new Date(date).toLocaleDateString('en-US', {
           weekday: 'long',
           month: 'long',
           day: 'numeric',
@@ -78,10 +86,10 @@ export default function MealPlanCard({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.neutral.card,
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    padding: spacing.md,
+    marginBottom: spacing.md,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -94,22 +102,22 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#333',
-    marginBottom: 16,
+    color: colors.text.primary,
+    marginBottom: spacing.md,
   },
   mealSlot: {
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   mealHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   mealTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: colors.text.primary,
   },
   addButton: {
     padding: 4,
@@ -118,14 +126,14 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   mealContent: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: colors.neutral.background,
     borderRadius: 8,
-    padding: 12,
+    padding: spacing.md,
   },
   recipeTitle: {
     fontSize: 14,
-    color: '#333',
-    marginBottom: 8,
+    color: colors.text.primary,
+    marginBottom: spacing.sm,
   },
   mealDetails: {
     flexDirection: 'row',
@@ -134,21 +142,21 @@ const styles = StyleSheet.create({
   detailItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 16,
+    marginRight: spacing.md,
   },
   detailText: {
     fontSize: 12,
-    color: '#666',
+    color: colors.text.secondary,
     marginLeft: 4,
   },
   emptyMeal: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: colors.neutral.background,
     borderRadius: 8,
-    padding: 12,
+    padding: spacing.md,
     alignItems: 'center',
   },
   emptyMealText: {
     fontSize: 14,
-    color: '#666',
+    color: colors.text.secondary,
   },
 }); 

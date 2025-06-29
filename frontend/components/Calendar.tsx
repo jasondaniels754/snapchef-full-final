@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { CalendarProps, MealPlan } from '../types/planner';
+import { colors, spacing } from '../design/designSystem';
 
 export default function Calendar({
   selectedDate,
@@ -91,7 +92,7 @@ export default function Calendar({
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={handlePrevMonth} style={styles.monthButton}>
-          <Ionicons name="chevron-back" size={24} color="#333" />
+          <Ionicons name="chevron-back" size={24} color={colors.text.primary} />
         </TouchableOpacity>
         <Text style={styles.monthText}>
           {new Date(currentYear, currentMonth).toLocaleString('default', {
@@ -100,7 +101,7 @@ export default function Calendar({
           })}
         </Text>
         <TouchableOpacity onPress={handleNextMonth} style={styles.monthButton}>
-          <Ionicons name="chevron-forward" size={24} color="#333" />
+          <Ionicons name="chevron-forward" size={24} color={colors.text.primary} />
         </TouchableOpacity>
       </View>
 
@@ -119,10 +120,10 @@ export default function Calendar({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.neutral.card,
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    padding: spacing.md,
+    marginBottom: spacing.md,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -136,25 +137,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   monthButton: {
-    padding: 8,
+    padding: spacing.sm,
   },
   monthText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#333',
+    color: colors.text.primary,
   },
   weekDays: {
     flexDirection: 'row',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   weekDay: {
     flex: 1,
     textAlign: 'center',
     fontSize: 12,
-    color: '#666',
+    color: colors.text.secondary,
     fontWeight: '500',
   },
   daysContainer: {
@@ -175,23 +176,23 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   selectedDay: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: colors.primary.main,
     borderRadius: 20,
   },
   hasPlanDay: {
-    backgroundColor: '#FFE5E5',
+    backgroundColor: colors.primary.light,
     borderRadius: 20,
   },
   dayText: {
     fontSize: 14,
-    color: '#333',
+    color: colors.text.primary,
   },
   selectedDayText: {
-    color: '#fff',
+    color: colors.text.inverse,
     fontWeight: '600',
   },
   hasPlanDayText: {
-    color: '#FF6B6B',
+    color: colors.primary.main,
     fontWeight: '500',
   },
   planIndicator: {
@@ -200,6 +201,6 @@ const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#FF6B6B',
+    backgroundColor: colors.primary.main,
   },
 }); 
