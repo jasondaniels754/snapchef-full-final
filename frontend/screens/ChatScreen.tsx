@@ -86,37 +86,68 @@ export default function ChatScreen(): React.ReactElement {
 
   // Handle sending a message
   const handleSendMessage = async (text: string) => {
-    const userMessage: ChatMessage = {
-      id: Date.now().toString(),
-      text,
-      isUser: true,
-      timestamp: new Date(),
-    };
+    if (!text.trim() || state.isLoading) return;
 
-    const aiMessage: ChatMessage = {
-      id: (Date.now() + 1).toString(),
-      text: '',
-      isUser: false,
-      timestamp: new Date(),
-      isLoading: true,
-    };
-
-    const updatedMessages = [...state.messages, userMessage, aiMessage];
-    setState(prev => ({ ...prev, messages: updatedMessages }));
-    saveChatHistory(updatedMessages);
-
-    // Get AI response
-    const aiResponse = await sendMessageToAI(text);
+    console.log('🚀 Sending message:', text);
+    console.log('📊 Current messages count:', state.messages.length);
     
-    const finalAiMessage: ChatMessage = {
-      ...aiMessage,
-      text: aiResponse,
-      isLoading: false,
-    };
+    setState(prev => ({ ...prev, isLoading: true }));
 
-    const finalMessages = [...state.messages, userMessage, finalAiMessage];
-    setState(prev => ({ ...prev, messages: finalMessages }));
-    saveChatHistory(finalMessages);
+    try {
+      const userMessage: ChatMessage = {
+        id: Date.now().toString(),
+        text,
+        isUser: true,
+        timestamp: new Date(),
+      };
+
+      const aiMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        text: '',
+        isUser: false,
+        timestamp: new Date(),
+        isLoading: true,
+      };
+
+      // Add user message and loading AI message
+      const messagesWithUser = [...state.messages, userMessage];
+      const messagesWithLoading = [...messagesWithUser, aiMessage];
+      
+      console.log('📝 Adding user message and loading AI message');
+      console.log('📊 Messages count after adding user:', messagesWithUser.length);
+      console.log('📊 Messages count with loading AI:', messagesWithLoading.length);
+      
+      setState(prev => ({ ...prev, messages: messagesWithLoading }));
+      saveChatHistory(messagesWithLoading);
+
+      // Get AI response
+      console.log('🤖 Getting AI response...');
+      const aiResponse = await sendMessageToAI(text);
+      console.log('✅ AI response received:', aiResponse.substring(0, 50) + '...');
+      
+      const finalAiMessage: ChatMessage = {
+        ...aiMessage,
+        text: aiResponse,
+        isLoading: false,
+      };
+
+      // Update with final AI message
+      const finalMessages = [...messagesWithUser, finalAiMessage];
+      console.log('📊 Final messages count:', finalMessages.length);
+      
+      setState(prev => ({ 
+        ...prev, 
+        messages: finalMessages,
+        isLoading: false 
+      }));
+      saveChatHistory(finalMessages);
+      
+      console.log('✅ Message flow completed successfully');
+    } catch (error) {
+      console.error('❌ Error sending message:', error);
+      Alert.alert('Error', 'Failed to send message. Please try again.');
+      setState(prev => ({ ...prev, isLoading: false }));
+    }
   };
 
   // Clear chat history
@@ -212,6 +243,22 @@ export default function ChatScreen(): React.ReactElement {
         contentContainerStyle={styles.messagesContent}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={renderEmptyState}
+        removeClippedSubviews={false}
+        getItemLayout={(data, index) => ({
+          length: 80, // Approximate height of each message
+          offset: 80 * index,
+          index,
+        })}
+        onContentSizeChange={() => {
+          setTimeout(() => {
+            flatListRef.current?.scrollToEnd({ animated: true });
+          }, 100);
+        }}
+        onLayout={() => {
+          setTimeout(() => {
+            flatListRef.current?.scrollToEnd({ animated: true });
+          }, 100);
+        }}
       />
 
       <ChatInput 
