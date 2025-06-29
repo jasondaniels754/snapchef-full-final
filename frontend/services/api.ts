@@ -1,6 +1,6 @@
 import { Recipe } from '../types/recipe';
 
-const BACKEND_URL = 'https://snapchef-full-final.onrender.com';
+const BACKEND_URL = 'https://snapchef-backend.onrender.com';
 
 export const generateRecipe = async (
   difficulty: string,
@@ -20,14 +20,14 @@ export const generateRecipe = async (
   });
 
   try {
-    const response = await fetch(`${BACKEND_URL}/generate-recipes`, {
+    const response = await fetch(`${BACKEND_URL}/api/generate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         difficulty,
-        cuisine, // Now using 'cuisine' instead of 'genre'
+        cuisine,
         numIngredients,
         diet,
         cookTime,
@@ -148,6 +148,33 @@ export const generateRecipe = async (
     }
   } catch (error) {
     console.error('Error generating recipe via backend:', error);
+    throw error;
+  }
+};
+
+export const sendChatMessage = async (message: string, context: string = 'cooking_assistant'): Promise<string> => {
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message,
+        context,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Chat API Error Response:', errorText);
+      throw new Error(`Chat API request failed with status ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data.response || 'I apologize, but I couldn\'t process your request. Please try again.';
+  } catch (error) {
+    console.error('Error sending chat message:', error);
     throw error;
   }
 }; 
