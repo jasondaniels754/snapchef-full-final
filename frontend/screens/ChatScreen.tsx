@@ -170,6 +170,22 @@ export default function ChatScreen(): React.ReactElement {
       <Text style={styles.emptyStateText}>
         Ask me anything about cooking, recipes, meal planning, or kitchen tips. I'm here to help you become a better cook!
       </Text>
+      
+      {/* Test button for debugging */}
+      <TouchableOpacity 
+        style={styles.testButton}
+        onPress={async () => {
+          try {
+            const response = await sendChatMessage('test', 'cooking_assistant');
+            Alert.alert('✅ API Test Success', `Response: ${response.substring(0, 100)}...`);
+          } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            Alert.alert('❌ API Test Failed', `Error: ${errorMessage}`);
+          }
+        }}
+      >
+        <Text style={styles.testButtonText}>Test API Connection</Text>
+      </TouchableOpacity>
     </View>
   );
 
@@ -256,5 +272,17 @@ const styles = StyleSheet.create({
     color: colors.text.tertiary,
     textAlign: 'center',
     paddingHorizontal: spacing.lg,
+  },
+  testButton: {
+    padding: spacing.md,
+    backgroundColor: colors.neutral.background,
+    borderWidth: 1,
+    borderColor: colors.text.secondary,
+    borderRadius: spacing.sm,
+  },
+  testButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors.text.secondary,
   },
 }); 
