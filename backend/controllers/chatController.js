@@ -1,10 +1,10 @@
-const OpenAI = require('openai');
+import OpenAI from 'openai';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-exports.chat = async (req, res) => {
+export const chat = async (req, res) => {
   try {
     const { message, context = 'cooking_assistant' } = req.body;
 

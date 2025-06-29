@@ -7,6 +7,7 @@ import chatRouter from './routes/chat.js';
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 4008;
+const HOST = '0.0.0.0';
 
 app.use(cors());
 app.use(express.json());
@@ -19,4 +20,4 @@ app.get('/', (req, res) => {
 app.use('/api/generate', generateRouter);
 app.use('/api/chat', chatRouter);
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, HOST, () => console.log(`Server running on ${HOST}:${PORT}`));
