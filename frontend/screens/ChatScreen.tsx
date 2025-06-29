@@ -58,16 +58,21 @@ export default function ChatScreen(): React.ReactElement {
     try {
       setState(prev => ({ ...prev, isLoading: true, error: null }));
       
-      console.log('🔄 Sending message to AI:', message);
+      console.warn('🔄 Sending message to AI:', message);
+      console.error('🔄 Sending message to AI:', message); // This should be more visible
+      
       const response = await sendChatMessage(message, 'cooking_assistant');
-      console.log('✅ AI Response received:', response);
+      
+      console.warn('✅ AI Response received:', response);
+      console.error('✅ AI Response received:', response); // This should be more visible
       
       // Show alert for debugging
       Alert.alert('Debug Info', `Message sent: ${message}\nResponse: ${response.substring(0, 100)}...`);
       
       return response;
     } catch (error) {
-      console.error('❌ Error sending message to AI:', error);
+      console.warn('❌ Error sending message to AI:', error);
+      console.error('❌ Error sending message to AI:', error); // This should be more visible
       
       // Show error alert for debugging
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -149,6 +154,8 @@ export default function ChatScreen(): React.ReactElement {
 
   // Load chat history on mount
   useEffect(() => {
+    console.warn('🚀 ChatScreen mounted - testing console logs');
+    console.error('🚀 ChatScreen mounted - testing console logs');
     loadChatHistory();
   }, []);
 
