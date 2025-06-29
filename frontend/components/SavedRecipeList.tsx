@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, FlatList, StyleSheet, RefreshControl } from 'react-native';
 import { SavedRecipe, SavedRecipeListProps } from '../types/savedRecipe';
-import RecipeCard from './RecipeCard';
-import { colors } from '../design/designSystem';
+import SavedRecipeItem from './SavedRecipeItem';
+import { colors, spacing } from '../design/designSystem';
 
 export default function SavedRecipeList({
   recipes,
@@ -13,10 +13,11 @@ export default function SavedRecipeList({
   onRefresh,
 }: SavedRecipeListProps): React.ReactElement {
   const renderItem = ({ item }: { item: SavedRecipe }) => (
-    <RecipeCard
+    <SavedRecipeItem
       recipe={item}
-      onClose={() => onDelete(item)}
-      onSave={() => onFavoriteToggle(item)}
+      onPress={onRecipePress}
+      onFavoriteToggle={onFavoriteToggle}
+      onDelete={onDelete}
     />
   );
 
@@ -43,6 +44,6 @@ export default function SavedRecipeList({
 
 const styles = StyleSheet.create({
   listContent: {
-    paddingBottom: 16,
+    paddingVertical: spacing.sm,
   },
 }); 

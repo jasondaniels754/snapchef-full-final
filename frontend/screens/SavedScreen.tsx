@@ -31,15 +31,20 @@ export default function SavedScreen(): React.ReactElement {
     try {
       setState(prev => ({ ...prev, isLoading: true, error: null }));
       const savedRecipesJson = await AsyncStorage.getItem('savedRecipes');
+      console.log('Saved recipes JSON:', savedRecipesJson);
+      
       if (savedRecipesJson) {
         const recipes = JSON.parse(savedRecipesJson) as Recipe[];
+        console.log('Parsed recipes:', recipes);
         const savedRecipes: SavedRecipe[] = recipes.map(recipe => ({
           ...recipe,
           savedAt: recipe.createdAt,
           isFavorite: false,
         }));
+        console.log('Processed saved recipes:', savedRecipes);
         setState(prev => ({ ...prev, recipes: savedRecipes, isLoading: false }));
       } else {
+        console.log('No saved recipes found');
         setState(prev => ({ ...prev, recipes: [], isLoading: false }));
       }
     } catch (error) {
@@ -120,6 +125,7 @@ export default function SavedScreen(): React.ReactElement {
 
   const filteredAndSortedRecipes = React.useMemo(() => {
     let result = [...state.recipes];
+    console.log('Initial recipes for filtering:', result.length);
 
     // Apply search filter
     if (state.searchQuery.trim()) {
@@ -129,20 +135,25 @@ export default function SavedScreen(): React.ReactElement {
         recipe.description.toLowerCase().includes(query) ||
         recipe.ingredients.some(ingredient => ingredient.toLowerCase().includes(query))
       );
+      console.log('After search filter:', result.length);
     }
 
     // Apply filters
     if (state.filters.favoritesOnly) {
       result = result.filter(recipe => recipe.isFavorite);
+      console.log('After favorites filter:', result.length);
     }
     if (state.filters.cuisine) {
       result = result.filter(recipe => recipe.cuisine === state.filters.cuisine);
+      console.log('After cuisine filter:', result.length);
     }
     if (state.filters.difficulty) {
       result = result.filter(recipe => recipe.difficulty === state.filters.difficulty);
+      console.log('After difficulty filter:', result.length);
     }
     if (state.filters.diet) {
       result = result.filter(recipe => recipe.diet === state.filters.diet);
+      console.log('After diet filter:', result.length);
     }
 
     // Apply sorting
@@ -160,6 +171,7 @@ export default function SavedScreen(): React.ReactElement {
       }
     });
 
+    console.log('Final filtered and sorted recipes:', result.length);
     return result;
   }, [state.recipes, state.searchQuery, state.filters, state.sortBy, state.sortOrder]);
 
