@@ -58,25 +58,11 @@ export default function ChatScreen(): React.ReactElement {
     try {
       setState(prev => ({ ...prev, isLoading: true, error: null }));
       
-      console.warn('🔄 Sending message to AI:', message);
-      console.error('🔄 Sending message to AI:', message); // This should be more visible
-      
       const response = await sendChatMessage(message, 'cooking_assistant');
-      
-      console.warn('✅ AI Response received:', response);
-      console.error('✅ AI Response received:', response); // This should be more visible
-      
-      // Show alert for debugging
-      Alert.alert('Debug Info', `Message sent: ${message}\nResponse: ${response.substring(0, 100)}...`);
       
       return response;
     } catch (error) {
-      console.warn('❌ Error sending message to AI:', error);
-      console.error('❌ Error sending message to AI:', error); // This should be more visible
-      
-      // Show error alert for debugging
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      Alert.alert('Error', `Failed to send message: ${errorMessage}`);
+      console.error('Error sending message to AI:', error);
       
       return 'I\'m sorry, I\'m having trouble connecting right now. Please check your internet connection and try again.';
     } finally {
