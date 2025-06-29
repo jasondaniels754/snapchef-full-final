@@ -20,6 +20,7 @@ export default function SavedScreen(): React.ReactElement {
       cuisine: null,
       difficulty: null,
       diet: null,
+      category: 'all',
     },
     sortBy: 'savedAt',
     sortOrder: 'desc',
@@ -138,7 +139,18 @@ export default function SavedScreen(): React.ReactElement {
       console.log('After search filter:', result.length);
     }
 
-    // Apply filters
+    // Apply category filter
+    if (state.filters.category && state.filters.category !== 'all') {
+      if (state.filters.category === 'quick') {
+        result = result.filter(recipe => (recipe.prepTime + recipe.cookTime) <= 30);
+        console.log('After quick meals filter:', result.length);
+      } else if (state.filters.category === 'weekend') {
+        result = result.filter(recipe => (recipe.prepTime + recipe.cookTime) > 30);
+        console.log('After weekend cooking filter:', result.length);
+      }
+    }
+
+    // Apply other filters (keeping for backward compatibility)
     if (state.filters.favoritesOnly) {
       result = result.filter(recipe => recipe.isFavorite);
       console.log('After favorites filter:', result.length);
@@ -164,8 +176,8 @@ export default function SavedScreen(): React.ReactElement {
           return order * (new Date(a.savedAt).getTime() - new Date(b.savedAt).getTime());
         case 'title':
           return order * a.title.localeCompare(b.title);
-        case 'difficulty':
-          return order * a.difficulty.localeCompare(b.difficulty);
+        case 'cookTime':
+          return order * ((a.prepTime + a.cookTime) - (b.prepTime + b.cookTime));
         default:
           return 0;
       }

@@ -15,8 +15,9 @@ export interface SavedRecipeState {
     cuisine: string | null;
     difficulty: 'Easy' | 'Medium' | 'Hard' | null;
     diet: string | null;
+    category: 'all' | 'quick' | 'weekend' | null;
   };
-  sortBy: 'savedAt' | 'title' | 'difficulty';
+  sortBy: 'savedAt' | 'title' | 'cookTime';
   sortOrder: 'asc' | 'desc';
 }
 
