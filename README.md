@@ -25,6 +25,28 @@ SnapChef is a mobile application that helps users plan and prepare meals using A
 - **CORS** enabled for frontend integration
 - **Environment variables** for configuration
 
+## 📊 Monitoring & Error Tracking
+
+### Sentry Integration
+SnapChef includes comprehensive error monitoring and performance tracking using Sentry:
+
+- **Frontend**: React Native error tracking with feature-specific tagging
+- **Backend**: Node.js performance monitoring and API error tracking
+- **GPT Integration**: Specialized tracking for AI request failures
+- **Privacy Protection**: Automatic filtering of sensitive data
+
+**Key Features:**
+- ✅ Automatic error capture and reporting
+- ✅ Performance monitoring and tracing
+- ✅ Feature-specific error tagging (`recipe_gen`, `calendar`, `simmer_chat`)
+- ✅ Environment-based configuration (disabled in development by default)
+- ✅ Breadcrumb tracking for debugging user journeys
+
+**Setup:**
+1. Copy environment files: `frontend/env.example` → `frontend/.env` and `backend/env.example` → `backend/.env`
+2. Add your Sentry DSNs to the environment files
+3. See `SENTRY_SETUP.md` for detailed configuration and maintenance guide
+
 ## 📱 Getting Started
 
 ### Prerequisites
@@ -88,14 +110,18 @@ snapchef-full-final/
 │   ├── navigation/          # Navigation configuration
 │   ├── screens/             # App screens
 │   ├── components/          # Reusable components
-│   ├── services/            # API services
+│   ├── services/            # API services & Sentry
 │   ├── types/               # TypeScript definitions
-│   └── design/              # Design system
+│   ├── design/              # Design system
+│   └── sentry.config.js     # Sentry configuration
 ├── backend/                 # Node.js server
 │   ├── server.js            # Express server
 │   ├── routes/              # API routes
 │   ├── controllers/         # Business logic
+│   ├── services/            # Sentry services
+│   ├── sentry.config.js     # Sentry configuration
 │   └── render.yaml          # Render deployment config
+├── SENTRY_SETUP.md          # Sentry integration guide
 └── README.md               # This file
 ```
 
@@ -124,17 +150,16 @@ yarn dev            # Start development server with nodemon
 **Backend (.env):**
 ```
 OPENAI_API_KEY=your_openai_api_key_here
+SENTRY_DSN_BACKEND=your_backend_dsn_here
+SENTRY_ENABLED=false
 PORT=4008
 ```
 
-**Frontend (app.config.js):**
-```javascript
-export default {
-  // ... other config
-  extra: {
-    openaiApiKey: process.env.OPENAI_API_KEY,
-  }
-}
+**Frontend (.env):**
+```
+SENTRY_DSN_FRONTEND=your_frontend_dsn_here
+SENTRY_ENABLED=false
+NODE_ENV=development
 ```
 
 ## 🚀 Deployment
@@ -144,12 +169,14 @@ The backend is configured for deployment on Render with:
 - `render.yaml` configuration file using yarn
 - `Procfile` for process management
 - Environment variable support
+- Sentry error monitoring
 
 ### Frontend (Expo)
 The frontend can be deployed using:
 - Expo Application Services (EAS)
 - Expo Web for web deployment
 - App Store/Google Play Store builds
+- Sentry error tracking in production
 
 ## 📝 API Endpoints
 

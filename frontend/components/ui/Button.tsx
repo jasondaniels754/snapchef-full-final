@@ -1,23 +1,16 @@
 import React from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  ViewStyle,
-  TextStyle,
-  ActivityIndicator,
-} from 'react-native';
-import { colors, typography, spacing, borderRadius, animation } from '../../design/designSystem';
+import { TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface ButtonProps {
   onPress: () => void;
   title: string;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'outline';
   size?: 'small' | 'medium' | 'large';
   disabled?: boolean;
   loading?: boolean;
-  style?: ViewStyle;
-  textStyle?: TextStyle;
+  style?: any;
+  textStyle?: any;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -30,105 +23,110 @@ export const Button: React.FC<ButtonProps> = ({
   style,
   textStyle,
 }) => {
+  const { theme } = useTheme();
+
   const getButtonStyle = () => {
     const baseStyle = {
-      ...styles.button,
-      ...styles[variant],
-      ...styles[size],
+      borderRadius: theme.borderRadius.full,
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
     };
 
-    if (disabled) {
-      return {
-        ...baseStyle,
-        ...styles.disabled,
-      };
-    }
+    const sizeStyles = {
+      small: {
+        paddingHorizontal: theme.spacing.md,
+        paddingVertical: theme.spacing.sm,
+        minHeight: 36,
+      },
+      medium: {
+        paddingHorizontal: theme.spacing.lg,
+        paddingVertical: theme.spacing.md,
+        minHeight: 44,
+      },
+      large: {
+        paddingHorizontal: theme.spacing.xl,
+        paddingVertical: theme.spacing.lg,
+        minHeight: 52,
+      },
+    };
 
-    return baseStyle;
+    const variantStyles = {
+      primary: {
+        backgroundColor: theme.colors.primary.main,
+        borderWidth: 0,
+      },
+      secondary: {
+        backgroundColor: theme.colors.secondary.main,
+        borderWidth: 0,
+      },
+      outline: {
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        borderColor: theme.colors.primary.main,
+      },
+    };
+
+    return [
+      baseStyle,
+      sizeStyles[size],
+      variantStyles[variant],
+      disabled && { opacity: 0.6 },
+      style,
+    ];
+  };
+
+  const getTextStyle = () => {
+    const baseTextStyle = {
+      fontWeight: '600' as const,
+    };
+
+    const variantTextStyles = {
+      primary: {
+        color: theme.colors.background.primary,
+      },
+      secondary: {
+        color: theme.colors.background.primary,
+      },
+      outline: {
+        color: theme.colors.primary.main,
+      },
+    };
+
+    const sizeTextStyles = {
+      small: {
+        fontSize: 14,
+      },
+      medium: {
+        fontSize: 16,
+      },
+      large: {
+        fontSize: 18,
+      },
+    };
+
+    return [
+      baseTextStyle,
+      variantTextStyles[variant],
+      sizeTextStyles[size],
+      textStyle,
+    ];
   };
 
   return (
     <TouchableOpacity
       onPress={onPress}
       disabled={disabled || loading}
-      style={[getButtonStyle(), style]}
+      style={getButtonStyle()}
       activeOpacity={0.8}
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'primary' ? colors.text.inverse : colors.primary.main}
           size="small"
+          color={variant === 'outline' ? theme.colors.primary.main : theme.colors.background.primary}
         />
       ) : (
-        <Text
-          style={[
-            styles.text,
-            styles[`${variant}Text`],
-            styles[`${size}Text`],
-            disabled && styles.disabledText,
-            textStyle,
-          ]}
-        >
-          {title}
-        </Text>
+        <Text style={getTextStyle()}>{title}</Text>
       )}
     </TouchableOpacity>
   );
-};
-
-const styles = StyleSheet.create({
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: borderRadius.md,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  primary: {
-    backgroundColor: colors.primary.main,
-  },
-  secondary: {
-    backgroundColor: colors.neutral.background,
-    borderWidth: 1,
-    borderColor: colors.primary.main,
-  },
-  small: {
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.sm,
-  },
-  medium: {
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  large: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-  },
-  disabled: {
-    backgroundColor: colors.neutral.divider,
-    borderColor: colors.neutral.divider,
-  },
-  text: {
-    ...typography.textStyles.button,
-    textAlign: 'center',
-  },
-  primaryText: {
-    color: colors.text.inverse,
-  },
-  secondaryText: {
-    color: colors.primary.main,
-  },
-  smallText: {
-    fontSize: typography.fontSize.sm,
-  },
-  mediumText: {
-    fontSize: typography.fontSize.base,
-  },
-  largeText: {
-    fontSize: typography.fontSize.lg,
-  },
-  disabledText: {
-    color: colors.text.disabled,
-  },
-}); 
+}; 

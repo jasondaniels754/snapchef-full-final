@@ -8,6 +8,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -72,7 +73,9 @@ export default function ChatScreen(): React.ReactElement {
 
   // Handle sending a message
   const handleSendMessage = async (text: string) => {
-    if (!text.trim() || state.isLoading) return;
+    if (!text.trim() || state.isLoading) {
+      return;
+    }
 
     setState(prev => ({ ...prev, isLoading: true }));
 
@@ -146,12 +149,13 @@ export default function ChatScreen(): React.ReactElement {
     );
   };
 
-  // Scroll to bottom when new messages arrive
+  // Scroll to bottom when new messages arrive - single reliable trigger
   useEffect(() => {
     if (state.messages.length > 0) {
-      setTimeout(() => {
+      // Use requestAnimationFrame for smooth scrolling
+      requestAnimationFrame(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
+      });
     }
   }, [state.messages]);
 
@@ -166,10 +170,13 @@ export default function ChatScreen(): React.ReactElement {
 
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
-      <Ionicons name="chatbubble-outline" size={64} color={colors.text.tertiary} />
-      <Text style={styles.emptyStateTitle}>Welcome to SnapChef Assistant!</Text>
+      <Image 
+        source={require('../assets/images/simmer-avatar.png')} 
+        style={styles.emptyStateImage}
+      />
+      <Text style={styles.emptyStateTitle}>Hey, I'm Simmer! 🍳</Text>
       <Text style={styles.emptyStateText}>
-        Ask me anything about cooking, recipes, meal planning, or kitchen tips. I'm here to help you become a better cook!
+        Hi there! I'm Simmer, your friendly cooking assistant. I'm here to help you cook confidently, plan meals creatively, and discover delicious recipes. Ask me anything about cooking — I'll keep it practical and encouraging! ✨
       </Text>
     </View>
   );
@@ -179,7 +186,7 @@ export default function ChatScreen(): React.ReactElement {
       style={styles.container} 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <Header title="Cooking Assistant" />
+      <Header title="Simmer 🍳" />
       
       <View style={styles.headerActions}>
         <TouchableOpacity onPress={handleClearChat} style={styles.clearButton}>
@@ -197,22 +204,11 @@ export default function ChatScreen(): React.ReactElement {
         contentContainerStyle={styles.messagesContent}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={renderEmptyState}
-        removeClippedSubviews={false}
-        getItemLayout={(data, index) => ({
-          length: 80, // Approximate height of each message
-          offset: 80 * index,
-          index,
-        })}
-        onContentSizeChange={() => {
-          setTimeout(() => {
-            flatListRef.current?.scrollToEnd({ animated: true });
-          }, 100);
-        }}
-        onLayout={() => {
-          setTimeout(() => {
-            flatListRef.current?.scrollToEnd({ animated: true });
-          }, 100);
-        }}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={10}
+        windowSize={10}
+        initialNumToRender={10}
+        updateCellsBatchingPeriod={50}
       />
 
       <ChatInput 
@@ -256,6 +252,7 @@ const styles = StyleSheet.create({
   },
   messagesContent: {
     padding: spacing.md,
+    paddingLeft: spacing.lg,
   },
   emptyState: {
     flex: 1,
@@ -273,5 +270,16 @@ const styles = StyleSheet.create({
     color: colors.text.tertiary,
     textAlign: 'center',
     paddingHorizontal: spacing.lg,
+  },
+  emptyStateImage: {
+    width: 128,
+    height: 128,
+    marginBottom: spacing.sm,
+  },
+  emptyStateIconContainer: {
+    width: 128,
+    height: 128,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 }); 

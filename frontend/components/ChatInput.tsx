@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ChatInputProps } from '../types/chat';
@@ -6,16 +6,37 @@ import { colors, spacing } from '../design/designSystem';
 
 export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps): React.ReactElement {
   const [message, setMessage] = useState('');
+  const [inputKey, setInputKey] = useState(0); // Force re-render key
+  const inputRef = useRef<TextInput>(null);
+
+  const clearInput = () => {
+    setMessage('');
+    setInputKey(prev => prev + 1);
+    if (inputRef.current) {
+      inputRef.current.clear();
+    }
+  };
 
   const handleSend = async () => {
     if (message.trim() && !isLoading) {
       const messageToSend = message.trim();
-      setMessage(''); // Clear immediately
+      
+      // Clear the input immediately for better UX
+      clearInput();
+      
       try {
         await onSendMessage(messageToSend);
+        
+        // Ensure input is cleared after successful send
+        clearInput();
+        
       } catch (error) {
-        // If there's an error, restore the message
-        setMessage(messageToSend);
+        console.error('Error in ChatInput handleSend:', error);
+        // Only restore message if there was an actual error
+        // Don't restore for validation errors or empty messages
+        if (messageToSend && error) {
+          setMessage(messageToSend);
+        }
       }
     }
   };
@@ -31,10 +52,12 @@ export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps):
     <View style={styles.container}>
       <View style={styles.inputContainer}>
         <TextInput
+          key={inputKey}
+          ref={inputRef}
           style={styles.input}
           placeholder="Ask me about cooking..."
           placeholderTextColor={colors.text.tertiary}
-          value={message}
+          defaultValue=""
           onChangeText={setMessage}
           multiline
           maxLength={500}

@@ -12,6 +12,7 @@ export type RootStackParamList = {
 
 export type MainTabParamList = {
   Generate: undefined;
+  SnapToRecipe: undefined;
   Saved: undefined;
   Planner: undefined;
   Chat: undefined;

@@ -9,6 +9,7 @@ export interface Recipe {
   title: string;
   description: string;
   ingredients: string[];
+  seasonings: string[];
   instructions: string[];
   difficulty: 'Easy' | 'Medium' | 'Hard';
   cuisine: string;
@@ -19,6 +20,9 @@ export interface Recipe {
   imageUrl?: string;
   createdAt: string;
   updatedAt: string;
+  cookingMethod?: string;
+  mainProtein?: string;
+  keyVegetable?: string;
 }
 
 export interface RecipeFormData {

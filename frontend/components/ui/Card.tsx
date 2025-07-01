@@ -20,7 +20,7 @@ export const Card: React.FC<CardProps> = ({
   style,
   variant = 'elevated',
 }) => {
-  const Container = onPress ? TouchableOpacity : View;
+  const Container: React.ComponentType<any> = onPress ? TouchableOpacity : View;
 
   return (
     <Container

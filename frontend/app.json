@@ -15,16 +15,46 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.snapchef",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to take photos of ingredients for recipe generation.",
+        "NSPhotoLibraryUsageDescription": "This app accesses your photo library to select images of ingredients for recipe generation."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.snapchef.app",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3d6e2f65-b1e0-4eba-953a-9bb79d2d05b3"
+      }
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow SnapChef to access your camera to take photos of ingredients."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow SnapChef to access your photo library to select images of ingredients."
+        }
+      ]
+    ]
   }
 } 

@@ -1,9 +1,10 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../design/designSystem';
+import { useTheme } from '../contexts/ThemeContext';
 
 import GenerateScreen from '../screens/GenerateScreen';
+import SnapToRecipeScreen from '../screens/SnapToRecipeScreen';
 import SavedScreen from '../screens/SavedScreen';
 import PlannerScreen from '../screens/PlannerScreen';
 import ChatScreen from '../screens/ChatScreen';
@@ -13,6 +14,8 @@ import { MainTabParamList } from '../types/navigation';
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export default function TabNavigator(): React.ReactElement {
+  const { theme } = useTheme();
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -21,6 +24,8 @@ export default function TabNavigator(): React.ReactElement {
 
           if (route.name === 'Generate') {
             iconName = focused ? 'restaurant' : 'restaurant-outline';
+          } else if (route.name === 'SnapToRecipe') {
+            iconName = focused ? 'camera' : 'camera-outline';
           } else if (route.name === 'Saved') {
             iconName = focused ? 'bookmark' : 'bookmark-outline';
           } else if (route.name === 'Planner') {
@@ -33,13 +38,25 @@ export default function TabNavigator(): React.ReactElement {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: colors.primary.main,
-        tabBarInactiveTintColor: colors.text.tertiary,
+        tabBarActiveTintColor: theme.colors.primary.main,
+        tabBarInactiveTintColor: theme.colors.text.disabled,
+        tabBarStyle: {
+          backgroundColor: theme.colors.background.primary,
+          borderTopColor: theme.colors.neutral.light,
+        },
+        tabBarLabelStyle: {
+          color: theme.colors.text.primary,
+        },
       })}
     >
       <Tab.Screen 
         name="Generate" 
         component={GenerateScreen}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen 
+        name="SnapToRecipe" 
+        component={SnapToRecipeScreen}
         options={{ headerShown: false }}
       />
       <Tab.Screen 

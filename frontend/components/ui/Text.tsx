@@ -7,27 +7,39 @@ import {
   Platform,
 } from 'react-native';
 import { colors, typography } from '../../design/designSystem';
+import { useTheme } from '../../contexts/ThemeContext';
 
-type TextVariant = 'h1' | 'h2' | 'h3' | 'body' | 'caption' | 'button';
-type TextColor = 'primary' | 'secondary' | 'tertiary' | 'disabled' | 'inverse';
-
-interface TextProps {
-  variant?: TextVariant;
-  color?: TextColor;
+interface TextProps extends RNTextProps {
+  variant?: 'h1' | 'h2' | 'h3' | 'body' | 'caption';
+  color?: 'primary' | 'secondary' | 'disabled';
   style?: any;
   children: React.ReactNode;
 }
 
-export function Text({ variant = 'body', color = 'primary', style, children }: TextProps) {
-  const textStyle = [
-    styles.base,
-    styles[variant],
-    { color: colors.text[color] },
-    style,
-  ];
+export const Text: React.FC<TextProps> = ({ 
+  variant = 'body', 
+  color = 'primary', 
+  style, 
+  children,
+  ...props 
+}) => {
+  const { theme } = useTheme();
 
-  return <RNText style={textStyle}>{children}</RNText>;
-}
+  const getTextStyle = () => {
+    const baseStyle = {
+      color: theme.colors.text[color],
+      ...theme.typography[variant],
+    };
+
+    return [baseStyle, style];
+  };
+
+  return (
+    <RNText style={getTextStyle()} {...props}>
+      {children}
+    </RNText>
+  );
+};
 
 const styles = StyleSheet.create({
   base: {
